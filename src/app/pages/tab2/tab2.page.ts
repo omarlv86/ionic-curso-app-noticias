@@ -1,6 +1,7 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { NewsService } from '../../services/news.service';
 import { Article } from '../../interfaces';
+import { IonInfiniteScroll } from '@ionic/angular';
 
 @Component({
   selector: 'app-tab2',
@@ -8,6 +9,8 @@ import { Article } from '../../interfaces';
   styleUrls: ['tab2.page.scss']
 })
 export class Tab2Page implements OnInit{
+
+  @ViewChild( IonInfiniteScroll, { static: true }) infiniteScroll: IonInfiniteScroll;
 
   public categories : string[] = [
   'business',
@@ -21,23 +24,38 @@ export class Tab2Page implements OnInit{
   public selectedCategory : string = this.categories[0];
   public articles: Article[] = []
 
-  constructor(private newService : NewsService) {}
+  constructor(private newsService : NewsService) {}
 
-  ngOnInit(): void {
-    this.newService.getTopHeadLinesByCategory(this.selectedCategory)
+  ngOnInit(){
+    
+    this.newsService.getTopHeadlinesByCategory(this.selectedCategory)
       .subscribe( articles => {
-        //console.log( articles )
-        this.articles =[ ...this.articles, ...articles ];
-      })    
+        this.articles = [ ...articles ]
+      })
   }
 
-  segmentChanged( event: any ){
-    this.selectedCategory = event.detail.value;
-    console.log(event.detail.value)
-    this.newService.getTopHeadLinesByCategory(this.selectedCategory)
+  segmentChanged( event: Event ) {
+    
+    this.selectedCategory = (event as CustomEvent).detail.value;
+    this.newsService.getTopHeadlinesByCategory(this.selectedCategory)
       .subscribe( articles => {
-        //console.log( articles )
-        this.articles =[ ...articles ];
-      })  
+        this.articles = [ ...articles ]
+    })
   }
+
+  loadData() {
+    this.newsService.getTopHeadlinesByCategory( this.selectedCategory, true )
+      .subscribe( articles => {
+        
+          if ( articles.length === this.articles.length ) {
+            this.infiniteScroll.disabled = true;
+            // event.target.disabled = true;
+            return;
+          }
+
+          this.articles = articles;
+          this.infiniteScroll.complete();
+          // event.target.complete();    
+        })
+   } 
 }
