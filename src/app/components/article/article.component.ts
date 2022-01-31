@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Article } from '../../interfaces/index';
 import { InAppBrowser } from '@awesome-cordova-plugins/in-app-browser/ngx';
-import { Platform } from '@ionic/angular';
+import { ActionSheetController, Platform } from '@ionic/angular';
 
 @Component({
   selector: 'app-article',
@@ -13,7 +13,7 @@ export class ArticleComponent {
   @Input() article: Article;
   @Input() index: number;
   
-  constructor( private iab : InAppBrowser, private platform : Platform) { }
+  constructor( private iab : InAppBrowser, private platform : Platform, private actionSheetCtrl : ActionSheetController) { }
 
 
   openArticle(){
@@ -25,6 +25,43 @@ export class ArticleComponent {
   
     window.open( this.article.url, '_blank');
   
+  
+  }
+
+  async openMenu(){
+    const actionSheet = await this.actionSheetCtrl.create({
+      header:'Opciones',
+      buttons:[
+        {
+          text:'Compartir',
+          icon: 'share-outline',
+          handler : () => this.onShareArticle()
+        },
+        {
+          text:'Favorito',
+          icon: 'heart-outline',
+          handler : ()=> this.onToggleFavorite()
+        },
+        {
+          text: 'Cancelar',
+          icon: 'close-outline',
+          role: 'cancel',
+          //cssClass:'secondary'
+        }
+      ]
+    });
+
+    await actionSheet.present();
+  }
+
+
+
+  onShareArticle() {
+    console.log('Share article')
+  }
+
+  onToggleFavorite(){
+    console.log('Toggle favorite')
   }
 
 }

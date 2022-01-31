@@ -1,17 +1,15 @@
 <ion-card>
   <ion-card-subtitle class="ion-margin">
 
-    <ion-row class="ion-align-items-center"
-      (click)="openArticle()">
-      <ion-col size="10" class="ion-margin">
+    <ion-row class="ion-align-items-center">
+      <ion-col size="8" class="ion-margin" (click)="openArticle()">
         <span class="text-primary"> {{ index }}. </span>
          <span class="article-source-name"> {{ article.source.name }}</span>
-
-         <ion-col size="2" class="ion-justify-content-end">
-           <ion-button (click)="onClick()" fill="clear">
-              <ion-icon slot="icon-only" name="ellipsis-vertical-outline"></ion-icon>
-           </ion-button>
-         </ion-col>
+      </ion-col>
+      <ion-col size="2" class="ion-align-self-start">
+        <ion-button (click)="openMenu()" fill="clear">
+           <ion-icon slot="icon-only" name="ellipsis-vertical-outline"></ion-icon>
+        </ion-button>
       </ion-col>
     </ion-row>
 
