@@ -47,7 +47,12 @@ export class StorageService {
     return [...this._localArticles ]
   }
 
-  public set(key: string, value: any) {
+ /*  public set(key: string, value: any) {
     this._storage?.set(key, value);
+  } */
+
+  articleInFavorites( article: Article) {
+    return !!this._localArticles.find( localArticle => localArticle.title === article.title );
   }
+
 }
