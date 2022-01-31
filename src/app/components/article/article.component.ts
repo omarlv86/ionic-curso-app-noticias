@@ -1,7 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Article } from '../../interfaces/index';
 import { InAppBrowser } from '@awesome-cordova-plugins/in-app-browser/ngx';
-import { ActionSheetController, Platform } from '@ionic/angular';
+import { ActionSheetButton, ActionSheetController, Platform } from '@ionic/angular';
+import { SocialSharing } from '@awesome-cordova-plugins/social-sharing/ngx';
 
 @Component({
   selector: 'app-article',
@@ -13,7 +14,11 @@ export class ArticleComponent {
   @Input() article: Article;
   @Input() index: number;
   
-  constructor( private iab : InAppBrowser, private platform : Platform, private actionSheetCtrl : ActionSheetController) { }
+  constructor( 
+    private iab : InAppBrowser, 
+    private platform : Platform, 
+    private actionSheetCtrl : ActionSheetController, 
+    private socialSharing : SocialSharing) { }
 
 
   openArticle(){
@@ -29,27 +34,49 @@ export class ArticleComponent {
   }
 
   async openMenu(){
+
+    const normalButtons : ActionSheetButton[] = [
+      {
+        text:'Favorito',
+        icon: 'heart-outline',
+        handler : ()=> this.onToggleFavorite()
+      },
+      {
+        text: 'Cancelar',
+        icon: 'close-outline',
+        role: 'cancel',
+        //cssClass:'secondary'
+      }
+    ];
+
+    const shareBtn: ActionSheetButton = {
+      text:'Compartir',
+      icon: 'share-outline',
+      handler : () => this.onShareArticle()
+    };
+
+    if (this.platform.is('capacitor')){
+     // actionSheet.buttons.unshift(share)
+     normalButtons.unshift(shareBtn);
+    }
+
     const actionSheet = await this.actionSheetCtrl.create({
       header:'Opciones',
-      buttons:[
-        {
+      buttons:normalButtons
+        /* {
           text:'Compartir',
           icon: 'share-outline',
           handler : () => this.onShareArticle()
-        },
-        {
-          text:'Favorito',
-          icon: 'heart-outline',
-          handler : ()=> this.onToggleFavorite()
-        },
-        {
-          text: 'Cancelar',
-          icon: 'close-outline',
-          role: 'cancel',
-          //cssClass:'secondary'
-        }
-      ]
+        }, */
+        
+      
     });
+
+    
+
+    //console.log('estamos en capacitor:' + this.platform.os)
+
+    
 
     await actionSheet.present();
   }
@@ -57,7 +84,15 @@ export class ArticleComponent {
 
 
   onShareArticle() {
-    console.log('Share article')
+    //console.log('Share article')
+    const {title, source, url} = this.article;
+
+    this.socialSharing.share(
+      title,
+      source.name,
+      null,
+      url
+    );
   }
 
   onToggleFavorite(){
