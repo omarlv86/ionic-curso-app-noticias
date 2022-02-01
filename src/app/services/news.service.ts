@@ -4,7 +4,8 @@ import { Observable, of } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { Article, NewsResponse } from '../interfaces';
 import { map } from 'rxjs/operators'
-import { ArticlesByCategoryAndPage } from '../interfaces/index';
+import { ArticlesByCategoryAndPage } from '../interfaces';
+import { storedArticlesByCategory } from '../data/mock-news';
 
 const apiKey = environment.apiKey;
 const apiUrl = environment.apiUrl;
@@ -14,7 +15,9 @@ const apiUrl = environment.apiUrl;
 })
 export class NewsService {
 
-  private articlesByCategoryAndPage: ArticlesByCategoryAndPage = {};
+  
+
+  private articlesByCategoryAndPage: ArticlesByCategoryAndPage = storedArticlesByCategory;
 
   constructor(private http: HttpClient) { }
 
@@ -65,7 +68,9 @@ export class NewsService {
 
   getTopHeadlinesByCategory( category: string, loadMore: boolean = false ):Observable<Article[]> {
 
-    if ( loadMore ) {
+     return this.getArticlesByCategory( category );
+
+    /* if ( loadMore ) {
       return this.getArticlesByCategory( category );
     }
 
@@ -73,7 +78,7 @@ export class NewsService {
       return of(this.articlesByCategoryAndPage[category].articles); //of permite crear un observable a partir de la data 
     }
 
-    return this.getArticlesByCategory( category );
+    return this.getArticlesByCategory( category ); */
    
   }
 
